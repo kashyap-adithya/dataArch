@@ -1,346 +1,1362 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adithya Kashyap - Data Architect</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adithya Kashyap — Data Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root{
+  --bg:        #090d14;
+  --bg2:       #0e1520;
+  --bg3:       #141d2e;
+  --bg4:       #192338;
+
+  --green:     #00e5a0;
+  --cyan:      #00d4ff;
+  --yellow:    #ffd166;
+  --purple:    #b57bee;
+  --red:       #ff5f6d;
+  --orange:    #ff9f43;
+
+  --t1:        #dce6f0;
+  --t2:        #8393a7;
+  --t3:        #4a5a70;
+  --t4:        #2a3546;
+
+  --border:    rgba(0,229,160,0.12);
+  --border2:   rgba(255,255,255,0.06);
+  --glow:      0 0 24px rgba(0,229,160,0.18);
+  --glow2:     0 0 40px rgba(0,229,160,0.10);
+
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --ease: cubic-bezier(.4,0,.2,1);
+}
+
+/* ═══════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--t1);
+  line-height:1.7;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:var(--green);transition:all .25s var(--ease)}
+a:hover{color:#fff}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--green);border-radius:3px;opacity:.4}
+
+/* ═══════════════════════════════════════════
+   BACKGROUNDS
+═══════════════════════════════════════════ */
+.grid-bg{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,229,160,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,160,.03) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.scanline{
+  position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.25;
+  background:repeating-linear-gradient(
+    to bottom,transparent 0,transparent 3px,
+    rgba(0,0,0,.05) 3px,rgba(0,0,0,.05) 4px);
+}
+
+/* ═══════════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════════ */
+.navbar{
+  position:fixed;width:100%;top:0;left:0;z-index:500;
+  padding:1.1rem 2.5rem;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(9,13,20,.88);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border2);
+  transition:all .3s var(--ease);
+}
+.navbar.scrolled{padding:.7rem 2.5rem;background:rgba(9,13,20,.97);border-bottom-color:var(--border)}
+.logo a{font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--t1)}
+.logo-b{color:var(--green)}
+.logo a:hover{color:var(--green)}
+.nav-links{list-style:none;display:flex;gap:.25rem}
+.nav-links a{
+  font-family:var(--mono);font-size:.8rem;color:var(--t2);
+  padding:.35rem .75rem;border-radius:3px;transition:all .2s var(--ease)
+}
+.nav-links a:hover{color:var(--green);background:rgba(0,229,160,.1)}
+.nav-num{color:var(--green);font-size:.72rem;margin-right:3px}
+
+/* terminal toggle button */
+.term-toggle-btn{
+  display:flex;align-items:center;gap:.5rem;
+  font-family:var(--mono);font-size:.78rem;
+  padding:.4rem 1rem;border-radius:4px;
+  background:rgba(0,229,160,.1);color:var(--green);
+  border:1px solid var(--border);cursor:pointer;
+  transition:all .2s var(--ease);
+  user-select:none;
+}
+.term-toggle-btn:hover{background:rgba(0,229,160,.2);box-shadow:var(--glow)}
+.term-toggle-btn .tb-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,160,.5)}50%{box-shadow:0 0 0 5px rgba(0,229,160,0)}}
+
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer}
+.hamburger span{width:20px;height:2px;background:var(--t2);border-radius:2px;transition:all .3s var(--ease)}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.section-pad{
+  padding:8rem 2rem;
+  max-width:1100px;margin:0 auto;
+  position:relative;z-index:1;
+}
+.section-alt{
+  background:linear-gradient(135deg,rgba(14,21,32,.96),rgba(9,13,20,.96));
+}
+.section-alt>.inner{max-width:1100px;margin:0 auto;padding:8rem 2rem}
+
+.s-title{
+  font-family:var(--mono);font-size:1.9rem;color:var(--t1);
+  display:flex;align-items:center;gap:.75rem;
+  margin-bottom:3rem;
+}
+.s-title::after{
+  content:'';flex:1;height:1px;max-width:380px;
+  background:linear-gradient(to right,var(--border),transparent);
+}
+.s-num{color:var(--green);font-size:.9rem}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.75rem 1.8rem;
+  font-family:var(--mono);font-size:.82rem;font-weight:700;
+  letter-spacing:.8px;border-radius:4px;cursor:pointer;
+  transition:all .25s var(--ease);
+}
+.btn-primary{background:var(--green);color:var(--bg);border:1px solid var(--green)}
+.btn-primary:hover{background:transparent;color:var(--green);box-shadow:var(--glow)}
+.btn-ghost{background:transparent;color:var(--green);border:1px solid var(--green)}
+.btn-ghost:hover{background:rgba(0,229,160,.1);box-shadow:var(--glow);color:var(--green)}
+.arr{transition:transform .3s}
+.btn-primary:hover .arr{transform:translateX(4px)}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+#home{
+  min-height:100vh;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:3rem;
+  padding:0 4rem;padding-top:5.5rem;
+  max-width:1200px;margin:0 auto;
+  position:relative;z-index:1;
+}
+.greeting{font-family:var(--mono);font-size:.82rem;color:var(--green);margin-bottom:1rem}
+.hero-h1{
+  font-family:var(--mono);font-size:3.8rem;font-weight:700;
+  color:var(--t1);line-height:1.05;margin-bottom:1.1rem;
+  animation:slideUp .8s var(--ease) .2s both;
+}
+.h1-accent{color:var(--green)}
+.tw-line{
+  font-family:var(--mono);font-size:.95rem;
+  color:var(--t2);margin-bottom:.75rem;min-height:1.5rem;
+}
+.tw-dyn{color:var(--green)}
+.tw-cur{color:var(--green);animation:blink 1s step-end infinite}
+.tagline{font-size:1rem;color:var(--t2);margin-bottom:2rem;line-height:1.65}
+.hero-cta{display:flex;gap:1rem;margin-bottom:2.5rem;animation:fadeIn .8s var(--ease) .5s both}
+.hero-stats{display:flex;align-items:center;gap:1.4rem;animation:fadeIn .8s var(--ease) .7s both}
+.stat{display:flex;flex-direction:column}
+.stat-n{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--green);line-height:1}
+.stat-sfx{font-family:var(--mono);font-size:1rem;color:var(--green)}
+.stat-l{font-size:.7rem;color:var(--t3);margin-top:2px}
+.stat-div{width:1px;height:30px;background:var(--border)}
+
+/* mini terminal in hero */
+.hero-term{
+  background:var(--bg3);
+  border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5),var(--glow);
+  animation:slideLeft .9s var(--ease) .3s both;
+}
+.th{
+  display:flex;align-items:center;gap:6px;
+  padding:.6rem 1rem;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--border2);
+}
+.td{width:12px;height:12px;border-radius:50%}
+.td.r{background:#ff5f57}.td.y{background:#febc2e}.td.g{background:#28c840}
+.tt{font-family:var(--mono);font-size:.7rem;color:var(--t3);margin-left:6px}
+.tb{padding:1.1rem 1.4rem;min-height:210px;max-height:250px;overflow-y:auto}
+.tb::-webkit-scrollbar{width:3px}
+.tb::-webkit-scrollbar-thumb{background:var(--border)}
+.tl{font-family:var(--mono);font-size:.76rem;line-height:1.85;white-space:pre;color:var(--t2);display:block}
+.tl-cmd{color:var(--t1)}.tl-ok{color:#28c840}.tl-dim{color:var(--t3)}.tl-warn{color:var(--orange)}.tl-key{color:var(--cyan)}
+
+/* ═══════════════════════════════════════════
+   ABOUT
+═══════════════════════════════════════════ */
+.about-grid{display:grid;grid-template-columns:1fr 300px;gap:3rem;align-items:start}
+.about-text p{font-size:.97rem;color:var(--t2);margin-bottom:.9rem;line-height:1.8}
+.about-text strong{color:var(--green);font-weight:600}
+.json-card{
+  position:sticky;top:100px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:1.4rem;
+}
+.json-tag{font-family:var(--mono);font-size:.7rem;color:var(--t3);margin-bottom:.9rem;padding-bottom:.7rem;border-bottom:1px solid var(--border2)}
+.json-list{list-style:none}
+.json-list li{
+  font-family:var(--mono);font-size:.77rem;
+  padding:.4rem 0;border-bottom:1px solid var(--border2);
+  display:flex;flex-wrap:wrap;gap:.3rem;
+}
+.json-list li:last-child{border-bottom:none}
+.jk{color:var(--cyan)}.jc{color:var(--t3)}.jv{color:var(--t1)}.jg{color:var(--green)}
+
+/* ═══════════════════════════════════════════
+   SKILLS — TABS + RADAR
+═══════════════════════════════════════════ */
+.tabs{display:flex;gap:.4rem;margin-bottom:2rem}
+.tab-btn{
+  font-family:var(--mono);font-size:.76rem;
+  padding:.45rem 1.2rem;border-radius:4px;
+  background:transparent;color:var(--t2);
+  border:1px solid var(--border2);cursor:pointer;transition:all .2s var(--ease);
+}
+.tab-btn.active,.tab-btn:hover{background:rgba(0,229,160,.1);color:var(--green);border-color:var(--border)}
+.tab-panel{display:block}.tab-panel.hidden{display:none}
+
+/* radar */
+.radar-wrap{display:grid;grid-template-columns:400px 1fr;gap:3rem;align-items:center}
+.radar-box{width:100%;max-width:400px}
+.legend-title{font-family:var(--mono);font-size:.75rem;color:var(--t3);margin-bottom:1rem}
+.legend-list{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.legend-list li{display:flex;align-items:center;gap:.55rem}
+.l-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.l-name{font-family:var(--mono);font-size:.72rem;color:var(--t2);min-width:145px}
+.l-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.l-fill{height:100%;border-radius:2px;transition:width .7s var(--ease)}
+.l-pct{font-family:var(--mono);font-size:.68rem;color:var(--t3);min-width:30px;text-align:right}
+
+/* ═══════════════════════════════════════════
+   PROJECTS — 3D TILT
+═══════════════════════════════════════════ */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:1.5rem}
+.proj-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:1.8rem;
+  display:flex;flex-direction:column;gap:.9rem;
+  position:relative;overflow:hidden;
+  transform-style:preserve-3d;will-change:transform;
+  transition:border-color .3s,box-shadow .3s;
+}
+.proj-card:hover{border-color:var(--green);box-shadow:0 20px 40px rgba(0,0,0,.3),var(--glow)}
+.tilt-glare{position:absolute;inset:0;pointer-events:none;border-radius:8px;z-index:1;transition:background .1s}
+.proj-card>*:not(.tilt-glare){position:relative;z-index:2}
+.proj-head{display:flex;justify-content:space-between;align-items:center}
+.proj-icon{font-size:1.7rem;color:var(--green)}
+.proj-links a{color:var(--t3);font-size:1.1rem;padding:.3rem .5rem;transition:color .2s}
+.proj-links a:hover{color:var(--green)}
+.proj-card h3{font-family:var(--mono);font-size:1.05rem;color:var(--t1);font-weight:700}
+.proj-desc{font-size:.87rem;color:var(--t2);line-height:1.65}
+.proj-desc strong{color:var(--t1);font-weight:500}
+.proj-feats{list-style:none;padding:0}
+.proj-feats li{font-size:.83rem;color:var(--t2);padding:.22rem 0 .22rem 1.1rem;position:relative}
+.proj-feats li::before{content:'▸';color:var(--green);position:absolute;left:0;font-size:.65rem;top:.36rem}
+.proj-tech{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.3rem}
+
+/* chips */
+.chip{
+  font-family:var(--mono);font-size:.68rem;
+  padding:2px 9px;border-radius:3px;
+  background:rgba(0,229,160,.09);color:var(--green);
+  border:1px solid rgba(0,229,160,.18);
+  transition:all .2s;white-space:nowrap;
+}
+.chip:hover{background:var(--green);color:var(--bg)}
+
+/* ═══════════════════════════════════════════
+   CERTIFICATIONS
+═══════════════════════════════════════════ */
+.cert-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:2rem}
+.cert-item{
+  text-align:center;background:var(--bg3);
+  padding:2rem 1.5rem;border-radius:8px;
+  border:1px solid var(--border);transition:all .3s var(--ease);max-width:220px;
+}
+.cert-item:hover{transform:translateY(-5px);border-color:var(--green);box-shadow:var(--glow)}
+.cert-item img{max-width:100px;margin-bottom:1rem;border-radius:6px}
+.cert-item h4{font-family:var(--mono);font-size:.88rem;color:var(--t1);margin-bottom:.25rem}
+.cert-item p{font-family:var(--mono);font-size:.72rem;color:var(--t3)}
+
+/* ═══════════════════════════════════════════
+   TIMELINE
+═══════════════════════════════════════════ */
+.timeline{position:relative;padding-left:2.5rem;z-index:1}
+.timeline::before{
+  content:'';position:absolute;left:0;top:8px;bottom:0;
+  width:1px;background:linear-gradient(to bottom,var(--green),transparent);
+}
+.tl-item{position:relative;margin-bottom:2rem}
+.tl-item::before{
+  content:'';position:absolute;left:-2.5rem;top:10px;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 10px rgba(0,229,160,.35);
+  transition:all .3s var(--ease);
+}
+.tl-item:hover::before{transform:scale(1.6);box-shadow:0 0 18px rgba(0,229,160,.5)}
+.tl-box{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:1.4rem 1.7rem;transition:all .3s var(--ease);
+}
+.tl-box:hover{border-color:var(--green);transform:translateX(4px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.tl-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.4rem;margin-bottom:.8rem}
+.tl-box h3{font-family:var(--mono);font-size:.98rem;color:var(--t1);font-weight:700}
+.tl-co{color:var(--green);font-size:.88rem}
+.tl-date{font-family:var(--mono);font-size:.7rem;color:var(--t3);display:flex;align-items:center;gap:.35rem;white-space:nowrap}
+.desc-list{list-style:none;padding:0;margin-bottom:.9rem}
+.desc-list li{font-size:.88rem;color:var(--t2);padding:.28rem 0 .28rem 1.3rem;position:relative;line-height:1.55}
+.desc-list li::before{content:'▸';color:var(--green);position:absolute;left:0;font-size:.65rem;top:.4rem}
+.desc-list li strong{color:var(--t1);font-weight:500}
+.tech-stack{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.8rem}
+
+/* ═══════════════════════════════════════════
+   CONTACT
+═══════════════════════════════════════════ */
+.contact-wrap{text-align:center;max-width:580px;margin:0 auto}
+.contact-intro{font-size:1rem;color:var(--t2);margin-bottom:2.2rem;line-height:1.7}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+.footer{
+  border-top:1px solid var(--border2);padding:2.5rem 1rem;
+  text-align:center;position:relative;z-index:1;
+  background:rgba(9,13,20,.9);
+}
+.foot-inner{max-width:560px;margin:0 auto}
+.soc-icons{display:flex;justify-content:center;gap:.9rem;margin-bottom:1.2rem}
+.soc-icons a{
+  color:var(--t3);font-size:1.15rem;
+  width:40px;height:40px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border2);border-radius:6px;transition:all .2s var(--ease);
+}
+.soc-icons a:hover{color:var(--green);border-color:var(--green);background:rgba(0,229,160,.08);transform:translateY(-3px)}
+.foot-copy,.foot-blt{font-family:var(--mono);font-size:.73rem;color:var(--t3);margin-top:.35rem}
+.foot-blt i{color:#e03a3e;margin:0 2px}
+
+/* ═══════════════════════════════════════════
+   FLOATING TERMINAL
+═══════════════════════════════════════════ */
+.ft-fab{
+  position:fixed;bottom:2rem;right:2rem;z-index:900;
+  display:flex;align-items:center;gap:.6rem;
+  padding:.7rem 1.3rem;
+  font-family:var(--mono);font-size:.8rem;font-weight:700;
+  background:var(--bg3);color:var(--green);
+  border:1px solid var(--green);border-radius:8px;
+  cursor:pointer;transition:all .25s var(--ease);
+  box-shadow:0 4px 24px rgba(0,0,0,.4),var(--glow);
+  user-select:none;
+}
+.ft-fab:hover{background:rgba(0,229,160,.12);box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 32px rgba(0,229,160,.25)}
+.ft-fab .fab-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,160,.5)}50%{box-shadow:0 0 0 5px rgba(0,229,160,0)}}
+.ft-fab .fab-label{letter-spacing:.5px}
+
+/* terminal window */
+.ft-window{
+  position:fixed;bottom:5.5rem;right:2rem;z-index:900;
+  width:680px;height:480px;
+  background:var(--bg2);
+  border:1px solid var(--green);border-radius:10px;
+  overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 24px 80px rgba(0,0,0,.7),0 0 60px rgba(0,229,160,.12);
+  transform:scale(.95) translateY(20px);opacity:0;pointer-events:none;
+  transition:transform .3s var(--ease),opacity .3s var(--ease);
+}
+.ft-window.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+
+/* resize handle */
+.ft-window.dragging{transition:none;user-select:none}
+
+/* titlebar */
+.ft-titlebar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.5rem .9rem;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--border2);
+  flex-shrink:0;cursor:move;
+}
+.ft-dots{display:flex;gap:6px;align-items:center}
+.ft-dot{width:12px;height:12px;border-radius:50%;cursor:pointer;transition:opacity .2s}
+.ft-dot:hover{opacity:.7}
+.ft-dot.r{background:#ff5f57}.ft-dot.y{background:#febc2e}.ft-dot.g{background:#28c840}
+.ft-title{font-family:var(--mono);font-size:.72rem;color:var(--t3);letter-spacing:.5px}
+.ft-close-x{
+  font-family:var(--mono);font-size:.78rem;color:var(--t3);
+  cursor:pointer;padding:.1rem .4rem;border-radius:3px;
+  transition:all .2s;user-select:none;
+}
+.ft-close-x:hover{color:var(--red);background:rgba(255,95,109,.1)}
+
+/* tab bar */
+.ft-tabs{
+  display:flex;align-items:center;gap:2px;
+  padding:4px 8px 0;
+  background:rgba(0,0,0,.2);
+  border-bottom:1px solid var(--border2);
+  flex-shrink:0;
+}
+.ft-tab{
+  font-family:var(--mono);font-size:.7rem;padding:4px 12px;
+  border-radius:5px 5px 0 0;color:var(--t3);cursor:pointer;
+  border:1px solid transparent;border-bottom:none;
+  transition:all .15s;user-select:none;
+}
+.ft-tab.active{background:var(--bg2);color:var(--green);border-color:var(--border);margin-bottom:-1px}
+.ft-tab:hover:not(.active){color:var(--t1);background:rgba(255,255,255,.04)}
+
+/* output */
+.ft-output{
+  flex:1;overflow-y:auto;
+  padding:.9rem 1.2rem .4rem;
+  scroll-behavior:smooth;
+}
+.ft-output::-webkit-scrollbar{width:3px}
+.ft-output::-webkit-scrollbar-thumb{background:rgba(0,229,160,.2);border-radius:2px}
+
+/* input row */
+.ft-input-row{
+  display:flex;align-items:center;
+  padding:.45rem 1.2rem .6rem;
+  border-top:1px solid var(--border2);
+  flex-shrink:0;
+}
+.ft-prompt{
+  font-family:var(--mono);font-size:.78rem;
+  white-space:nowrap;user-select:none;
+}
+#ft-input{
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:var(--mono);font-size:.78rem;
+  color:var(--t1);caret-color:var(--green);margin-left:5px;
+}
+
+/* status bar */
+.ft-status{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1rem;height:22px;
+  background:rgba(0,0,0,.3);
+  border-top:1px solid var(--border2);
+  font-family:var(--mono);font-size:.65rem;color:var(--t3);
+  flex-shrink:0;
+}
+.ft-status-ok{color:var(--green)}
+
+/* terminal output styles */
+.ol{display:block;margin:1px 0;white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:.76rem;line-height:1.75;color:var(--t2)}
+.ol-cmd{color:var(--t1)}
+.c-g{color:var(--green)}.c-c{color:var(--cyan)}.c-y{color:var(--yellow)}
+.c-p{color:var(--purple)}.c-r{color:var(--red)}.c-o{color:var(--orange)}
+.c-d{color:var(--t3)}.c-m{color:var(--t2)}.c-bold{font-weight:700}
+
+/* suggestion pills */
+.suggs{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0 3px}
+.sugg{
+  font-family:var(--mono);font-size:.68rem;padding:3px 10px;
+  border:1px solid var(--border);border-radius:3px;
+  color:var(--cyan);cursor:pointer;
+  background:rgba(0,212,255,.05);transition:all .15s;user-select:none;
+}
+.sugg:hover{background:rgba(0,212,255,.14);border-color:var(--cyan);color:#fff}
+
+/* prog bar in terminal */
+.prog-row{display:flex;align-items:center;gap:8px;margin:2px 0}
+.prog-lbl{min-width:155px;font-family:var(--mono);font-size:.72rem;color:var(--t2)}
+.prog-track{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .65s var(--ease)}
+.prog-pct{font-family:var(--mono);font-size:.68rem;color:var(--t3);min-width:32px;text-align:right}
+
+/* inline chip in terminal */
+.tchip{
+  display:inline-block;font-family:var(--mono);font-size:.66rem;
+  padding:1px 7px;border-radius:2px;
+  background:rgba(0,229,160,.09);color:var(--green);
+  border:1px solid rgba(0,229,160,.18);margin:2px 2px 2px 0;
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .55s var(--ease),transform .55s var(--ease)}
+.fade-up.vis{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:1024px){
+  #home{grid-template-columns:1fr;padding:8rem 2rem 4rem;text-align:center}
+  .hero-term{max-width:480px;margin:0 auto}
+  .hero-cta,.hero-stats{justify-content:center}
+  .hero-h1{font-size:3rem}
+  .about-grid{grid-template-columns:1fr}
+  .json-card{position:static}
+  .radar-wrap{grid-template-columns:1fr}
+  .radar-box{max-width:320px;margin:0 auto}
+  .proj-grid{grid-template-columns:1fr}
+  .ft-window{width:calc(100vw - 2rem);right:1rem;bottom:5rem}
+}
+@media(max-width:768px){
+  .navbar{padding:.8rem 1.2rem}
+  .nav-links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,13,20,.98);border-bottom:1px solid var(--border);padding:.8rem}
+  .nav-links.open{display:flex}
+  .hamburger{display:flex}
+  .term-toggle-btn .fab-label{display:none}
+  .hero-h1{font-size:2.5rem}
+  .s-title{font-size:1.4rem}
+  .section-pad,.section-alt>.inner{padding:5rem 1.2rem}
+  .tl-head{flex-direction:column}
+  .ft-window{width:calc(100vw - 1.5rem);height:420px;right:.75rem}
+}
+@media(max-width:480px){
+  .hero-h1{font-size:2rem}
+  .hero-cta{flex-direction:column;align-items:center}
+  .hero-stats{flex-direction:column;gap:.9rem}
+  .stat-div{display:none}
+  .ft-fab{bottom:1.2rem;right:1.2rem;padding:.6rem 1rem;font-size:.74rem}
+}
+</style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo"><a href="#home">ADITHYA KASHYAP</a></div>
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
-        <ul class="nav-links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#experience">Career</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </nav>
 
-    <header id="home" class="hero-section">
-        <div class="hero-content">
-            <p class="greeting">Hello, I'm</p>
-            <h1>Adithya Kashyap.</h1>
-            <p class="tagline">Turning raw data into refined intelligence—at scale, in real time.</p>
-            <a href="#projects" class="btn primary-btn">Explore My Work</a>
-        </div>
-    </header>
+<div class="grid-bg"></div>
+<div class="scanline"></div>
 
-    <section id="about" class="section-padding">
-      <h2 class="section-title">About Me</h2>
-      <div class="about-content">
-        <div class="about-text">
-            <p>
-                I specialize in <strong>designing and optimizing scalable data pipelines</strong>, significantly reducing processing time and infrastructure costs. My expertise includes <strong>ETL workflows</strong>, <strong>batch and near real-time data processing</strong>, and <strong>cloud-based architectures</strong> to support fraud and spam detection models, user retention strategies, and product analytics.
-            </p>
-            <p>
-                With a strong background in <strong>Python</strong>, <strong>PySpark</strong>, <strong>SQL</strong>, <strong>Apache Spark</strong>, and <strong>Airflow</strong>, I develop high-performance data solutions that enhance data accessibility and business intelligence. Additionally, I create <strong>interactive dashboards</strong> in Google Looker and Looker Studio, providing actionable insights for strategic decision-making.
-            </p>
-            <p>
-                I am passionate about <strong>leveraging big data technologies</strong> to drive business impact, efficiency, and innovation in fast-paced environments.
-            </p>
-        </div>
-        </div>
-    </section>
+<!-- ═══════ NAVBAR ═══════ -->
+<nav class="navbar" id="navbar">
+  <div class="logo"><a href="#home"><span class="logo-b">[</span>AK<span class="logo-b">]</span></a></div>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about"><span class="nav-num">01.</span>About</a></li>
+    <li><a href="#skills"><span class="nav-num">02.</span>Skills</a></li>
+    <li><a href="#projects"><span class="nav-num">03.</span>Projects</a></li>
+    <li><a href="#experience"><span class="nav-num">04.</span>Career</a></li>
+    <li><a href="#contact"><span class="nav-num">05.</span>Contact</a></li>
+  </ul>
+  <div class="term-toggle-btn" id="nav-term-btn">
+    <span class="tb-dot"></span>
+    <span class="fab-label">Terminal</span>
+  </div>
+</nav>
 
-    <section id="skills" class="section-padding">
-        <h2 class="section-title">Skills</h2>
-        <div class="skills-grid">
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-code"></i>
-                        <h3>Programming & Big Data</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>Python, PySpark, Apache Spark</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-database"></i>
-                        <h3>Database Querying</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>SQL, Spark SQL</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-warehouse"></i>
-                        <h3>Data Warehousing</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>BigQuery, Athena</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-cloud"></i>
-                        <h3>Cloud Platforms</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>Google Cloud Platform (GCP), Amazon Web Service (AWS)</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-project-diagram"></i>
-                        <h3>Workflow Orchestration</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>Airflow, DBT</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-stream"></i>
-                        <h3>Real-Time Data Streaming</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>Kafka</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-chart-bar"></i>
-                        <h3>Data Visualization</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>Looker, Looker Studio</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-sitemap"></i>
-                        <h3>Data Modeling & Optimization</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>ETL and ELT Design, Data Partitioning, Performance Tuning</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <i class="fas fa-code-branch"></i>
-                        <h3>Version Control</h3>
-                    </div>
-                    <div class="card-back">
-                        <p>Git, GitHub</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-<section id="projects" class="section-padding">
-    <h2 class="section-title">Projects</h2>
-    <div class="projects-grid">
-        <!-- Existing IPL T20 Analytics Project Card -->
-        <div class="project-card">
-            <div class="project-content">
-                <h3>IPL T20 Analytics</h3>
-                <p class="project-description">
-                    <strong>Data Engineering Pipeline</strong> to process ball-by-ball IPL T'20 match data using <strong>Apache Airflow</strong>, <strong>PostgreSQL</strong>, and <strong>Streamlit</strong>.
-                </p>
-                <ul class="project-features">
-                    <li>Designed modular ETL pipelines to ingest, transform, and load IPL match data.</li>
-                    <li>Created interactive dashboards to analyze team performance, player stats, and match outcomes.</li>
-                    <li>Secured sensitive credentials using environment variables and Streamlit's secrets management.</li>
-                </ul>
-                <div class="project-links">
-                    <a href="https://iplt20dashboard.streamlit.app/" target="_blank" class="btn project-btn">View Dashboard <i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
-        </div>
-
-        <!-- New NSE Market Intelligence Airflow Project Card -->
-        <div class="project-card">
-            <div class="project-content">
-                <h3>NSE Market Intelligence Airflow</h3>
-                <p class="project-description">
-                    <strong>Automated Stock Market Data Pipeline</strong> built using <strong>Apache Airflow</strong>, <strong>PostgreSQL</strong>, and <strong>Google Gemini AI</strong> for data enrichment and stock recommendations.
-                </p>
-                <ul class="project-features">
-                    <li>End-to-end ETL workflow fetching stock metadata, price history, and forecasts.</li>
-                    <li>Technical indicator calculations and ML-based price forecasting (Prophet).</li>
-                    <li>AI-powered trading suggestions generated by Google Gemini and stored in a structured database.</li>
-                    <li>Robust upsert logic to keep data fresh and avoid duplicates.</li>
-                </ul>
-                <div class="project-links">
-                    <a href="https://github.com/kashyap-adithya/nse_market_intelligence" target="_blank" class="btn project-btn">
-                        View Repo <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
+<!-- ═══════ HERO ═══════ -->
+<section id="home">
+  <div class="hero-content">
+    <p class="greeting">› initializing_portfolio.py</p>
+    <h1 class="hero-h1">Adithya<br><span class="h1-accent">Kashyap.</span></h1>
+    <p class="tw-line">
+      <span style="color:var(--t2)">I build </span><span class="tw-dyn" id="tw-el"></span><span class="tw-cur">|</span>
+    </p>
+    <p class="tagline">Turning raw data into refined intelligence —<br>at scale, in real time.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">Explore My Work <span class="arr">→</span></a>
+      <a href="https://github.com/kashyap-adithya" target="_blank" class="btn btn-ghost"><i class="fab fa-github"></i> GitHub</a>
     </div>
+    <!-- <div class="hero-stats">
+      <div class="stat"><span class="stat-n counter" data-target="6">0</span><span class="stat-sfx">+</span><span class="stat-l">Years in Data</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-n">3TB</span><span class="stat-l">Daily Processing</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-n counter" data-target="80">0</span><span class="stat-sfx">+</span><span class="stat-l">Countries Impacted</span></div>
+    </div> -->
+  </div>
+
+  <!-- hero mini terminal -->
+  <div class="hero-term">
+    <div class="th">
+      <span class="td r"></span><span class="td y"></span><span class="td g"></span>
+      <span class="tt">pipeline_status.sh</span>
+    </div>
+    <div class="tb" id="hero-term-out"></div>
+  </div>
 </section>
 
-    <section id="certifications" class="section-padding">
-    <h2 class="section-title">Certifications & Awards</h2>
-    <div class="certifications-grid">
-        <div class="cert-item">
-            <a href="https://credentials.getdbt.com/2b27f5f6-9326-44cc-a149-699c14f509f8#acc.kjDixWpq" target="_blank" title="View my Data Architect Certification">
-                <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/badge/90738631" alt="Accredible Data Architect Badge">
-            </a>
-            <h4>Certified DBT Developer</h4>
-            <p>Accredible</p>
+<!-- ═══════ ABOUT ═══════ -->
+<section class="section-alt">
+<div class="inner section-pad">
+  <h2 class="s-title"><span class="s-num">01.</span> About Me</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>I specialize in <strong>designing and optimizing scalable data pipelines</strong>, significantly reducing processing time and infrastructure costs. My expertise includes <strong>ETL workflows</strong>, <strong>batch and near real-time data processing</strong>, and <strong>cloud-based architectures</strong> to support fraud and spam detection models, user retention strategies, and product analytics.</p>
+      <p>With a strong background in <strong>Python</strong>, <strong>PySpark</strong>, <strong>SQL</strong>, <strong>Apache Spark</strong>, and <strong>Airflow</strong>, I develop high-performance data solutions that enhance data accessibility and business intelligence. I also create <strong>interactive dashboards</strong> in Google Looker and Looker Studio, providing actionable insights for strategic decision-making.</p>
+      <p>I am passionate about <strong>leveraging big data technologies</strong> to drive business impact, efficiency, and innovation in fast-paced environments.</p>
+    </div>
+    <div class="json-card">
+      <div class="json-tag">// quick_facts.json</div>
+      <ul class="json-list">
+        <li><span class="jk">"role"</span><span class="jc">:</span> <span class="jv">"Data Engineer"</span></li>
+        <li><span class="jk">"location"</span><span class="jc">:</span> <span class="jv">"Bengaluru, India"</span></li>
+        <li><span class="jk">"focus"</span><span class="jc">:</span> <span class="jv">"Big Data &amp; ETL"</span></li>
+        <li><span class="jk">"cloud"</span><span class="jc">:</span> <span class="jv">["GCP","AWS"]</span></li>
+        <li><span class="jk">"status"</span><span class="jc">:</span> <span class="jg">"open_to_work"</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ SKILLS ═══════ -->
+<section id="skills" class="section-pad">
+  <h2 class="s-title"><span class="s-num">02.</span> Skills</h2>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="radar">Radar Chart</button>
+  </div>
+  <div class="tab-panel" id="tab-radar">
+    <div class="radar-wrap">
+      <div class="radar-box"><canvas id="skillRadar"></canvas></div>
+      <div>
+        <h3 class="legend-title">// skill_proficiency</h3>
+        <ul class="legend-list" id="radarLegend"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PROJECTS ═══════ -->
+<section id="projects" class="section-alt">
+<div class="inner section-pad">
+  <h2 class="s-title"><span class="s-num">03.</span> Projects</h2>
+  <div class="proj-grid">
+
+    <div class="proj-card tilt-card">
+      <div class="tilt-glare"></div>
+      <div class="proj-head">
+        <i class="fas fa-folder-open proj-icon"></i>
+        <div class="proj-links">
+          <a href="https://iplt20dashboard.streamlit.app/" target="_blank"><i class="fas fa-external-link-alt"></i></a>
         </div>
+      </div>
+      <h3>IPL T20 Analytics</h3>
+      <p class="proj-desc">Data Engineering Pipeline processing ball-by-ball IPL T20 match data using <strong>Apache Airflow</strong>, <strong>PostgreSQL</strong>, and <strong>Streamlit</strong>.</p>
+      <ul class="proj-feats">
+        <li>Modular ETL pipelines to ingest, transform, and load IPL match data.</li>
+        <li>Interactive dashboards for team performance and player stats.</li>
+        <li>Secured credentials via environment variables and Streamlit secrets.</li>
+      </ul>
+      <div class="proj-tech">
+        <span class="chip">Airflow</span><span class="chip">PostgreSQL</span><span class="chip">Streamlit</span><span class="chip">Python</span>
+      </div>
+    </div>
+
+    <div class="proj-card tilt-card">
+      <div class="tilt-glare"></div>
+      <div class="proj-head">
+        <i class="fas fa-folder-open proj-icon"></i>
+        <div class="proj-links">
+          <a href="https://github.com/kashyap-adithya/nse_market_intelligence" target="_blank"><i class="fab fa-github"></i></a>
         </div>
-        
-    </section>
+      </div>
+      <h3>NSE Market Intelligence</h3>
+      <p class="proj-desc">Automated stock market pipeline using <strong>Apache Airflow</strong>, <strong>PostgreSQL</strong>, and <strong>Google Gemini AI</strong> for enrichment and trading recommendations.</p>
+      <ul class="proj-feats">
+        <li>End-to-end ETL fetching stock metadata, price history, and forecasts.</li>
+        <li>ML price forecasting with Prophet + technical indicators.</li>
+        <li>AI-powered trading suggestions generated by Google Gemini.</li>
+        <li>Robust upsert logic to keep data fresh and deduplicated.</li>
+      </ul>
+      <div class="proj-tech">
+        <span class="chip">Airflow</span><span class="chip">PostgreSQL</span><span class="chip">Gemini AI</span><span class="chip">Prophet</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
 
-    <section id="experience" class="section-padding">
-        <h2 class="section-title">Career</h2>
-                <div class="timeline">
-            <div class="timeline-item">
-                <!-- <div class="timeline-dot"></div> -->
-                <div class="timeline-content">
-                    <h3>Data Engineer <span class="company">- Aqilea</span></h3>
-                    <p class="duration">July'25 - Present</p>
-                    <ul class="description-list">
-                    </ul>
-                    <div class="tech-stack">
-                        <span class="chip">Python</span>
-                        <span class="chip">DBT</span>
-                        <span class="chip">BigQuery</span>
-                        <span class="chip">SQL</span>
-                        <span class="chip">Cloud Functions</span>
-                        <span class="chip">Dataflow</span>
-                        <span class="chip">Looker</span>
-                    </div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <!-- <div class="timeline-dot"></div> -->
-                <div class="timeline-content">
-                    <h3>Data Engineer <span class="company">- Truecaller</span></h3>
-                    <p class="duration">April'21 - June'25</p>
-                    <ul class="description-list">
-                        <li><strong>Optimized ETL workflows</strong> using Spark, SQL, and Airflow, reducing data processing by 3TB daily.</li>
-                        <li><strong>Built scalable pipelines</strong> for fraud and spam detection, processing of data with performance enhancements like partitioning and parallel processing.</li>
-                        <li>Designed a near <strong>real-time spam detection system</strong> with Spark and Python, improving system resilience.</li>
-                        <li>Engineered <strong>LLM-integrated feedback pipelines</strong>, reducing preprocessing time from 3 hours to 30 minutes through workflow optimization and efficient task orchestration.</li>
-                        <li>Developed post-processing logic to generate structured payloads while maintaining data privacy, supporting <strong>smart SMS expansion in 80+ countries</strong>.</li>
-                        <li>Created <strong>user retention analytics</strong> leveraging cohort analysis, and designed <strong>interactive dashboards</strong> in Looker and Looker Studio for real-time KPI tracking, driving strategic decisions across global markets.</li>
-                    </ul>
-                    <div class="tech-stack">
-                        <span class="chip">Python</span>
-                        <span class="chip">Airflow</span>
-                        <span class="chip">BigQuery</span>
-                        <span class="chip">SQL</span>
-                        <span class="chip">PySpark</span>
-                        <span class="chip">Apache Spark</span>
-                        <span class="chip">Looker</span>
-                    </div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <!-- <div class="timeline-dot"></div> -->
-                <div class="timeline-content">
-                    <h3>Operations Analyst <span class="company">- Dunzo Digital India</span></h3>
-                    <p class="duration">June'19 - April'21</p>
-                    <ul class="description-list">
-                        <li>Optimized customer interactions and compliance audits, reducing queue times by 2 minutes and errors by 4%.</li>
-                        <li>Automated reporting with Google App Script.</li>
-                        <li>Enhanced support performance tracking through Google Data Studio dashboards.</li>
-                    </ul>
-                    <div class="tech-stack">
-                        <span class="chip">Python</span>
-                        <span class="chip">Google AppScript</span>
-                        <span class="chip">SQL</span>
-                        <span class="chip">Redash</span>
-                    </div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <!-- <div class="timeline-dot"></div> -->
-                <div class="timeline-content">
-                    <h3>Computational Engineer <span class="company">- Engimat Simulations India</span></h3>
-                    <p class="duration">August'18 - June'19</p>
-                    <ul class="description-list">
-                        <li>Utilized Code-Aster and Calculix for design validation and conducted simulations for sports equipment.</li>
-                        <li>Mentored undergraduate students on simulation techniques and engineering principles.</li>
-                    </ul>
-                </div>
-            </div>
+<!-- ═══════ CERTIFICATIONS ═══════ -->
+<section id="certifications" class="section-pad">
+  <h2 class="s-title"><span class="s-num">04.</span> Certifications &amp; Awards</h2>
+  <div class="cert-grid">
+    <div class="cert-item fade-up">
+      <a href="https://credentials.getdbt.com/2b27f5f6-9326-44cc-a149-699c14f509f8#acc.kjDixWpq" target="_blank">
+        <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/badge/90738631" alt="DBT Badge">
+      </a>
+      <h4>Certified DBT Developer</h4>
+      <p>Accredible</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ CAREER ═══════ -->
+<section id="experience" class="section-alt">
+<div class="inner section-pad">
+  <h2 class="s-title"><span class="s-num">05.</span> Career</h2>
+  <div class="timeline">
+
+    <div class="tl-item fade-up">
+      <div class="tl-box">
+        <div class="tl-head">
+          <h3>Data Engineer <span class="tl-co">@ Aqilea</span></h3>
+          <p class="tl-date"><i class="fas fa-calendar-alt"></i> July '25 – Present</p>
         </div>
-    </section>
-
-    <section id="contact" class="section-padding">
-        <h2 class="section-title">Get In Touch</h2>
-        <p class="contact-intro">I'm currently looking for new opportunities, and my inbox is always open. Whether you have a question or just want to say hi, I'll try my best to get back to you!</p>
-        <div class="contact-links">
-            <a href="mailto:adithya.kashyap2009@gmail.com" class="btn primary-btn contact-btn">Say Hello <i class="fas fa-envelope"></i></a>
+        <div class="tech-stack">
+          <span class="chip">Python</span><span class="chip">DBT</span><span class="chip">BigQuery</span><span class="chip">SQL</span><span class="chip">Cloud Functions</span><span class="chip">Dataflow</span><span class="chip">Looker</span>
         </div>
-    </section>
+      </div>
+    </div>
 
-    <footer class="site-footer">
-        <div class="social-icons">
-            <a href="https://www.linkedin.com/in/adithyakashyap/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://github.com/kashyap-adithya" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
-            <a href="mailto:adithya.kashyap2009@gmail.com" target="_blank" title="Email"><i class="fa fa-envelope"></i></a>
-            <a href="tel:+91951355667" target="_blank" title="Phone"><i class="fa fa-phone"></i></a>
-            <a href="https://www.instagram.com/im_avkashyap/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+    <div class="tl-item fade-up">
+      <div class="tl-box">
+        <div class="tl-head">
+          <h3>Data Engineer <span class="tl-co">@ Truecaller</span></h3>
+          <p class="tl-date"><i class="fas fa-calendar-alt"></i> April '21 – June '25</p>
         </div>
-        <p>&copy; <span id="current-year"></span> Adithya Kashyap. All rights reserved.</p>
-        <p class="built-with">Built with <i class="fas fa-heart"></i> by Adithya Kashyap</p>
-    </footer>
+        <ul class="desc-list">
+          <li><strong>Optimized ETL workflows</strong> using Spark, SQL, and Airflow, reducing data processing by 3TB daily.</li>
+          <li><strong>Built scalable pipelines</strong> for fraud and spam detection with partitioning and parallel processing.</li>
+          <li>Designed a near <strong>real-time spam detection system</strong> with Spark and Python.</li>
+          <li>Engineered <strong>LLM-integrated feedback pipelines</strong>, cutting preprocessing from 3 hours to 30 minutes.</li>
+          <li>Developed post-processing logic supporting <strong>smart SMS expansion in 80+ countries</strong>.</li>
+          <li>Created <strong>user retention analytics</strong> and Looker dashboards for real-time KPI tracking.</li>
+        </ul>
+        <div class="tech-stack">
+          <span class="chip">Python</span><span class="chip">Airflow</span><span class="chip">BigQuery</span><span class="chip">SQL</span><span class="chip">PySpark</span><span class="chip">Apache Spark</span><span class="chip">Looker</span>
+        </div>
+      </div>
+    </div>
 
-    <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
+    <div class="tl-item fade-up">
+      <div class="tl-box">
+        <div class="tl-head">
+          <h3>Operations Analyst <span class="tl-co">@ Dunzo Digital India</span></h3>
+          <p class="tl-date"><i class="fas fa-calendar-alt"></i> June '19 – April '21</p>
+        </div>
+        <ul class="desc-list">
+          <li>Optimized customer interactions and compliance audits, reducing queue times and errors by 4%.</li>
+          <li>Automated reporting with Google App Script.</li>
+          <li>Enhanced support performance tracking via Google Data Studio dashboards.</li>
+        </ul>
+        <div class="tech-stack">
+          <span class="chip">Python</span><span class="chip">Google AppScript</span><span class="chip">SQL</span><span class="chip">Redash</span>
+        </div>
+      </div>
+    </div>
 
-        // Mobile menu toggle
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navLinks = document.querySelector('.nav-links');
+    <div class="tl-item fade-up">
+      <div class="tl-box">
+        <div class="tl-head">
+          <h3>Computational Engineer <span class="tl-co">@ Engimat Simulations India</span></h3>
+          <p class="tl-date"><i class="fas fa-calendar-alt"></i> August '18 – June '19</p>
+        </div>
+        <ul class="desc-list">
+          <li>Utilized Code-Aster and Calculix for design validation and sports equipment simulations.</li>
+          <li>Mentored undergraduate students on simulation and engineering principles.</li>
+        </ul>
+      </div>
+    </div>
 
-        mobileMenu.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-        });
+  </div>
+</div>
+</section>
 
-        // Auto update copyright year
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+<!-- ═══════ CONTACT ═══════ -->
+<section id="contact" class="section-pad">
+  <h2 class="s-title"><span class="s-num">06.</span> Get In Touch</h2>
+  <div class="contact-wrap">
+    <p class="contact-intro">I'm currently open to new opportunities. Whether you have a question or just want to say hi — my inbox is always open.</p>
+    <a href="mailto:adithyakashyap@example.com" class="btn btn-primary">Say Hello <i class="fas fa-envelope"></i></a>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="footer">
+  <div class="foot-inner">
+    <div class="soc-icons">
+      <a href="https://www.linkedin.com/in/adithyakashyap/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+      <a href="https://github.com/kashyap-adithya" target="_blank"><i class="fab fa-github"></i></a>
+      <a href="mailto:adithyakashyap@example.com"><i class="fa fa-envelope"></i></a>
+      <a href="tel:+91951355667"><i class="fa fa-phone"></i></a>
+      <a href="https://www.instagram.com/im_avkashyap/" target="_blank"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p class="foot-copy">&copy; <span id="yr"></span> Adithya Kashyap. All rights reserved.</p>
+    <p class="foot-blt">Built with <i class="fas fa-heart"></i> by Adithya Kashyap</p>
+  </div>
+</footer>
+
+<!-- ═══════ FLOATING TERMINAL ═══════ -->
+<div class="ft-fab" id="ft-fab">
+  <span class="fab-dot"></span>
+  <span class="fab-label">&gt;_ Terminal</span>
+</div>
+
+<div class="ft-window" id="ft-window">
+  <div class="ft-titlebar" id="ft-titlebar">
+    <div class="ft-dots">
+      <div class="ft-dot r" id="ft-close-dot"></div>
+      <div class="ft-dot y"></div>
+      <div class="ft-dot g"></div>
+    </div>
+    <span class="ft-title">ak@portfolio — bash</span>
+    <span class="ft-close-x" id="ft-close-x">✕</span>
+  </div>
+  <div class="ft-tabs">
+    <div class="ft-tab active">bash</div>
+  </div>
+  <div class="ft-output" id="ft-output"></div>
+  <div class="ft-input-row">
+    <span class="ft-prompt">
+      <span class="c-g c-bold">ak</span><span class="c-d">@</span><span class="c-c">portfolio</span><span class="c-d">:</span><span class="c-p">~</span><span class="c-g"> $ </span>
+    </span>
+    <input id="ft-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="type help …">
+  </div>
+  <div class="ft-status">
+    <span class="ft-status-ok">● connected</span>
+    <span id="ft-hint">type <b>help</b> to explore</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════════════ -->
+<script>
+/* ── year ── */
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* ── smooth scroll ── */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth'});
+  });
+});
+
+/* ── navbar scroll ── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',scrollY>50);
+});
+
+/* ── hamburger ── */
+document.getElementById('hamburger').addEventListener('click',()=>{
+  document.getElementById('nav-links').classList.toggle('open');
+});
+
+/* ── scroll reveal ── */
+const ro = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); });
+},{threshold:.1});
+document.querySelectorAll('.tl-item,.proj-card,.cert-item').forEach(el=>{
+  el.classList.add('fade-up'); ro.observe(el);
+});
+
+/* ── counter ── */
+const co = new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const el=e.target,tgt=+el.dataset.target;
+    let n=0; const step=Math.max(1,Math.ceil(tgt/50));
+    const tick=()=>{ n=Math.min(n+step,tgt); el.textContent=n; if(n<tgt) requestAnimationFrame(tick); };
+    tick(); co.unobserve(el);
+  });
+},{threshold:.5});
+document.querySelectorAll('.counter').forEach(el=>co.observe(el));
+
+/* ── typewriter role ── */
+const roles=['scalable ETL pipelines.','real-time data streams.','fraud detection systems.','big data architectures.','analytics dashboards.'];
+let ri=0,ci=0,del=false;
+const twEl=document.getElementById('tw-el');
+(function typeRole(){
+  const w=roles[ri];
+  twEl.textContent=del?w.slice(0,--ci):w.slice(0,++ci);
+  if(!del&&ci===w.length){del=true;setTimeout(typeRole,1900);return;}
+  if(del&&ci===0){del=false;ri=(ri+1)%roles.length;}
+  setTimeout(typeRole,del?36:62);
+})();
+
+/* ── hero mini terminal ── */
+const heroLines=[
+  {t:'$ python protfolio.py --env prod',c:'tl-cmd'},
+  {t:'# Initializing DE...',c:'tl-dim'},
+  {t:'status:   ● RUNNING',c:'tl-ok'},
+  {t:'latency:  ~240ms',c:'tl-ok'},
+  {t:'# model status',c:'tl-dim'},
+  {t:'pipeline:  ✓ COMPLETE',c:'tl-ok'},
+  {t:'$ _',c:'tl-key'},
+];
+const heroOut=document.getElementById('hero-term-out');
+(async function runHero(){
+  for(const l of heroLines){
+    await new Promise(r=>setTimeout(r,520));
+    const p=document.createElement('span');
+    p.className='tl '+(l.c||'');
+    p.textContent=l.t;
+    heroOut.appendChild(p);
+    heroOut.scrollTop=heroOut.scrollHeight;
+  }
+})();
+
+/* ── radar chart ── */
+const skillData=[
+  {label:'Python / PySpark',  value:85,color:'#00e5a0'},
+  {label:'SQL / Spark SQL',   value:85,color:'#00d4ff'},
+  {label:'BigQuery / Athena', value:85,color:'#34d399'},
+  {label:'Data Modeling',     value:80,color:'#b57bee'},
+  {label:'Airflow / DBT',     value:80,color:'#a78bfa'},
+  {label:'Looker / BI',       value:75,color:'#38bdf8'},
+  {label:'GCP / AWS',         value:75,color:'#ffd166'},
+  {label:'Kafka Streaming',   value:65,color:'#ff7675'},
+];
+const radarObs=new IntersectionObserver(es=>{
+  if(!es[0].isIntersecting) return;
+  radarObs.disconnect();
+  const ctx=document.getElementById('skillRadar').getContext('2d');
+  const grad=ctx.createRadialGradient(0,0,0,0,0,200);
+  grad.addColorStop(0,'rgba(0,229,160,.22)'); grad.addColorStop(1,'rgba(0,229,160,.02)');
+  new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:skillData.map(s=>s.label),
+      datasets:[{
+        data:skillData.map(s=>s.value),
+        backgroundColor:grad,
+        borderColor:'#00e5a0',borderWidth:2,
+        pointBackgroundColor:skillData.map(s=>s.color),
+        pointBorderColor:'#090d14',pointBorderWidth:2,
+        pointRadius:5,pointHoverRadius:8,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      animation:{duration:900,easing:'easeInOutQuart'},
+      scales:{r:{
+        min:0,max:100,
+        ticks:{stepSize:25,color:'#4a5a70',backdropColor:'transparent',font:{family:'JetBrains Mono',size:9}},
+        grid:{color:'rgba(255,255,255,.05)'},
+        angleLines:{color:'rgba(255,255,255,.05)'},
+        pointLabels:{color:'#8393a7',font:{family:'JetBrains Mono',size:10}}
+      }},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#141d2e',borderColor:'#00e5a0',borderWidth:1,
+          titleColor:'#00e5a0',bodyColor:'#dce6f0',
+          titleFont:{family:'JetBrains Mono'},bodyFont:{family:'JetBrains Mono'},
+          callbacks:{label:c=>` ${c.parsed.r}% proficiency`}
+        }
+      }
+    }
+  });
+  const leg=document.getElementById('radarLegend');
+  skillData.forEach(s=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<span class="l-dot" style="background:${s.color}"></span><span class="l-name">${s.label}</span><div class="l-track"><div class="l-fill" style="width:0%;background:${s.color}" data-pct="${s.value}"></div></div><span class="l-pct">${s.value}%</span>`;
+    leg.appendChild(li);
+  });
+  setTimeout(()=>document.querySelectorAll('.l-fill').forEach(b=>b.style.width=b.dataset.pct+'%'),200);
+},{threshold:.2});
+radarObs.observe(document.getElementById('skillRadar'));
+
+/* ── 3D tilt ── */
+document.querySelectorAll('.tilt-card').forEach(card=>{
+  const glare=card.querySelector('.tilt-glare');
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(800px) rotateX(${y*-13}deg) rotateY(${x*13}deg) scale3d(1.03,1.03,1.03)`;
+    glare.style.background=`radial-gradient(circle at ${(x+.5)*100}% ${(y+.5)*100}%,rgba(0,229,160,.12) 0%,transparent 65%)`;
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='perspective(800px) rotateX(0) rotateY(0) scale3d(1,1,1)';
+    glare.style.background='none';
+  });
+});
+
+/* ══════════════════════════════════════════════
+   FLOATING TERMINAL ENGINE
+══════════════════════════════════════════════ */
+const ftWin   = document.getElementById('ft-window');
+const ftFab   = document.getElementById('ft-fab');
+const ftOut   = document.getElementById('ft-output');
+const ftInput = document.getElementById('ft-input');
+let termOpen=false, cmdHistory=[], hIdx=-1, tabIdx=0, tabList=[];
+
+function toggleTerm(forceOpen){
+  termOpen = forceOpen !== undefined ? forceOpen : !termOpen;
+  ftWin.classList.toggle('open', termOpen);
+  if(termOpen){ ftInput.focus(); if(!ftOut.children.length) bootTerm(); }
+}
+
+ftFab.addEventListener('click',()=>toggleTerm());
+document.getElementById('nav-term-btn').addEventListener('click',()=>toggleTerm());
+document.getElementById('ft-close-x').addEventListener('click',()=>toggleTerm(false));
+document.getElementById('ft-close-dot').addEventListener('click',()=>toggleTerm(false));
+ftOut.addEventListener('click',()=>ftInput.focus());
+
+/* draggable */
+const tb=document.getElementById('ft-titlebar');
+let drag=false,ox=0,oy=0;
+tb.addEventListener('mousedown',e=>{
+  if(e.target.classList.contains('ft-dot')||e.target.classList.contains('ft-close-x')) return;
+  drag=true; ox=e.clientX-ftWin.offsetLeft; oy=e.clientY-ftWin.offsetTop;
+  ftWin.classList.add('dragging');
+});
+window.addEventListener('mousemove',e=>{
+  if(!drag) return;
+  ftWin.style.left=Math.max(0,Math.min(window.innerWidth-ftWin.offsetWidth,e.clientX-ox))+'px';
+  ftWin.style.top =Math.max(0,Math.min(window.innerHeight-ftWin.offsetHeight,e.clientY-oy))+'px';
+  ftWin.style.right='auto'; ftWin.style.bottom='auto';
+});
+window.addEventListener('mouseup',()=>{ drag=false; ftWin.classList.remove('dragging'); });
+
+/* helpers */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function print(html,cls=''){
+  const s=document.createElement('span');
+  s.className='ol '+(cls);
+  s.innerHTML=html;
+  ftOut.appendChild(s);
+  ftOut.scrollTop=ftOut.scrollHeight;
+}
+function blank(){ print(''); }
+
+function echoCmd(cmd){
+  print(`<span class="c-g c-bold">ak</span><span class="c-d">@</span><span class="c-c">portfolio</span><span class="c-d">:</span><span class="c-p">~</span><span class="c-g"> $ </span>${esc(cmd)}`,'ol-cmd');
+}
+
+function showSuggs(list){
+  const w=document.createElement('div'); w.className='suggs';
+  list.forEach(c=>{
+    const b=document.createElement('div'); b.className='sugg'; b.textContent=c;
+    b.addEventListener('click',()=>{ ftInput.value=c; ftInput.focus(); runCmd(c); ftInput.value=''; });
+    w.appendChild(b);
+  });
+  ftOut.appendChild(w); ftOut.scrollTop=ftOut.scrollHeight;
+}
+
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+/* boot */
+async function bootTerm(){
+  const lines=[
+    `<span class="c-d">ak-portfolio-os — bash 5.2.0</span>`,
+    `<span class="c-d">Type </span><span class="c-c">help</span><span class="c-d"> to explore. Use </span><span class="c-c">↑↓</span><span class="c-d"> for history, </span><span class="c-c">Tab</span><span class="c-d"> to complete.</span>`,
+  ];
+  for(const l of lines){ await delay(120); print(l); }
+  blank();
+  showSuggs(['help','whoami','skills','projects','experience','contact','clear']);
+}
+
+/* commands */
+const cmds = {
+  async help(){
+    blank();
+    print(`<span class="c-c c-bold">┌── COMMANDS ─────────────────────────────────┐</span>`);
+    [
+      ['whoami',    'Identity card'],
+      ['about',     'Full bio'],
+      ['skills',    'Skill bars (with %s)'],
+      ['stack',     'Full tech stack by category'],
+      ['projects',  'Projects + links'],
+      ['experience','Career timeline'],
+      ['cert',      'Certifications'],
+      ['contact',   'Get in touch'],
+      ['github',    'Open GitHub profile'],
+      ['resume',    'Resume highlights'],
+      ['clear',     'Clear terminal'],
+      ['help',      'Show this menu'],
+    ].forEach(([c,d])=>print(`  <span class="c-y">${c.padEnd(14)}</span><span class="c-d">—</span> <span class="c-m">${d}</span>`));
+    print(`<span class="c-c c-bold">└─────────────────────────────────────────────┘</span>`);
+    blank();
+    showSuggs(['whoami','skills','projects','experience']);
+  },
+
+  async whoami(){
+    blank();
+    print(`<span class="c-g c-bold" style="font-size:.9rem;letter-spacing:1px">ADITHYA KASHYAP</span>`);
+    blank();
+    for(const [k,v] of [
+      ['Role','Data Engineer'],
+      ['Location','Bengaluru, India 🇮🇳'],
+      ['Experience','<span class="c-g">6+ years</span> building data systems'],
+      ['Currently','Data Engineer <span class="c-y">@ Aqilea</span>'],
+      ['Status','<span class="c-g">● open_to_work</span>'],
+    ]){
+      await delay(55);
+      print(`  <span class="c-c">${k.padEnd(12)}</span>${v}`);
+    }
+    blank();
+    showSuggs(['about','experience','skills']);
+  },
+
+  async about(){
+    blank();
+    print(`<span class="c-g c-bold">── ABOUT ────────────────────────────────────</span>`);
+    blank();
+    const ps=[
+      `I specialize in <span class="c-y">designing and optimizing scalable data pipelines</span>,`,
+      `significantly reducing processing time and infrastructure costs.`,
+      null,
+      `Expertise: <span class="c-c">ETL workflows</span>, <span class="c-c">real-time processing</span>, and <span class="c-c">cloud architectures</span>`,
+      `supporting fraud detection, user retention, and product analytics.`,
+      null,
+      `Core tools: <span class="c-y">Python</span>, <span class="c-y">PySpark</span>, <span class="c-y">SQL</span>, <span class="c-y">Apache Spark</span>, <span class="c-y">Airflow</span>.`,
+      null,
+      `Passionate about <span class="c-g">leveraging big data</span> to drive business impact.`,
+    ];
+    for(const l of ps){ await delay(45); if(l===null) blank(); else print(l); }
+    blank();
+    showSuggs(['skills','experience','projects']);
+  },
+
+  async skills(){
+    blank();
+    print(`<span class="c-g c-bold">── SKILL PROFICIENCY ────────────────────────</span>`);
+    blank();
+    const sk=[
+      {n:'Python / PySpark',    p:85,c:'#00e5a0'},
+      {n:'SQL / Spark SQL',     p:85,c:'#00d4ff'},
+      {n:'BigQuery / Athena',   p:85,c:'#34d399'},
+      {n:'Data Modeling / ETL', p:80,c:'#b57bee'},
+      {n:'Airflow / DBT',       p:80,c:'#a78bfa'},
+      {n:'Looker / BI Tools',   p:75,c:'#38bdf8'},
+      {n:'GCP / AWS',           p:75,c:'#ffd166'},
+      {n:'Kafka Streaming',     p:65,c:'#ff7675'},
+    ];
+    for(const s of sk){
+      await delay(55);
+      const row=document.createElement('div'); row.className='prog-row';
+      row.innerHTML=`<span class="prog-lbl">${s.n}</span><div class="prog-track"><div class="prog-fill" style="width:0%;background:${s.c}" data-pct="${s.p}"></div></div><span class="prog-pct">${s.p}%</span>`;
+      ftOut.appendChild(row); ftOut.scrollTop=ftOut.scrollHeight;
+    }
+    await delay(80);
+    document.querySelectorAll('#ft-output .prog-fill').forEach(b=>b.style.width=b.dataset.pct+'%');
+    blank();
+    showSuggs(['stack','projects','experience']);
+  },
+
+  async stack(){
+    blank();
+    print(`<span class="c-g c-bold">── TECH STACK ───────────────────────────────</span>`);
+    blank();
+    const cats=[
+      ['Languages',      ['Python','SQL','Spark SQL','Bash']],
+      ['Big Data',       ['Apache Spark','PySpark','Kafka']],
+      ['Cloud',          ['GCP','AWS','BigQuery','Athena','Cloud Functions','Dataflow']],
+      ['Orchestration',  ['Apache Airflow','DBT']],
+      ['Visualization',  ['Looker','Looker Studio','Streamlit']],
+      ['Data Modeling',  ['ETL/ELT','Partitioning','Perf Tuning']],
+      ['Version Control',['Git','GitHub']],
+    ];
+    for(const [cat,items] of cats){
+      await delay(70);
+      print(`  <span class="c-y c-bold">${cat.padEnd(16)}</span> ${items.map(i=>`<span class="tchip">${i}</span>`).join('')}`);
+    }
+    blank();
+    showSuggs(['skills','projects','experience']);
+  },
+
+  async projects(){
+    blank();
+    print(`<span class="c-g c-bold">── PROJECTS ─────────────────────────────────</span>`);
+    blank();
+    const projs=[
+      {name:'IPL T20 Analytics',url:'https://iplt20dashboard.streamlit.app/',repo:null,
+       desc:'ETL pipeline for ball-by-ball IPL T20 data.',
+       hi:['Modular Airflow + PostgreSQL ETL','Streamlit dashboard for stats','Secured credentials via env vars'],
+       stack:['Airflow','PostgreSQL','Streamlit','Python']},
+      {name:'NSE Market Intelligence',url:null,repo:'https://github.com/kashyap-adithya/nse_market_intelligence',
+       desc:'Automated stock pipeline with AI-powered trading suggestions.',
+       hi:['End-to-end ETL + ML forecasting with Prophet','Google Gemini AI trading suggestions','Robust upsert & deduplication logic'],
+       stack:['Airflow','PostgreSQL','Gemini AI','Prophet']},
+    ];
+    for(let i=0;i<projs.length;i++){
+      const p=projs[i];
+      await delay(90);
+      print(`  <span class="c-c c-bold">[${i+1}] ${p.name}</span>`);
+      print(`      <span class="c-d">${p.desc}</span>`);
+      for(const h of p.hi){ await delay(35); print(`      <span class="c-d">▸</span> ${h}`); }
+      print(`      ${p.stack.map(s=>`<span class="tchip">${s}</span>`).join('')}`);
+      if(p.url)  print(`      <span class="c-g">🌐</span> <span style="text-decoration:underline;color:var(--cyan)">${p.url}</span>`);
+      if(p.repo) print(`      <span class="c-y">📦</span> <span style="text-decoration:underline;color:var(--cyan)">${p.repo}</span>`);
+      blank();
+    }
+    showSuggs(['experience','skills','contact']);
+  },
+
+  async experience(){
+    blank();
+    print(`<span class="c-g c-bold">── CAREER ───────────────────────────────────</span>`);
+    blank();
+    const jobs=[
+      {role:'Data Engineer',co:'Aqilea',period:"Jul '25–Present",cur:true,
+       hi:[],stack:['Python','DBT','BigQuery','SQL','Cloud Functions','Dataflow','Looker']},
+      {role:'Data Engineer',co:'Truecaller',period:"Apr '21–Jun '25",cur:false,
+       hi:['Optimized ETL cutting 3TB daily processing','Fraud & spam detection pipelines','Near real-time spam detection with Spark','LLM pipelines: 3h → 30min preprocessing','Smart SMS in 80+ countries','Looker dashboards for KPI tracking'],
+       stack:['Python','Airflow','BigQuery','SQL','PySpark','Spark','Looker']},
+      {role:'Operations Analyst',co:'Dunzo Digital',period:"Jun '19–Apr '21",cur:false,
+       hi:['Reduced queue times & errors by 4%','Automated reporting with AppScript','Google Data Studio dashboards'],
+       stack:['Python','AppScript','SQL','Redash']},
+      {role:'Computational Engineer',co:'Engimat Simulations',period:"Aug '18–Jun '19",cur:false,
+       hi:['FEM simulations for sports equipment','Mentored undergrad students'],stack:[]},
+    ];
+    for(const j of jobs){
+      await delay(80);
+      const cur=j.cur?` <span class="c-g">● now</span>`:'';
+      print(`  <span class="c-y c-bold">${j.role}</span> <span class="c-d">@</span> <span class="c-c">${j.co}</span>${cur}`);
+      print(`  <span class="c-d">${j.period}</span>`);
+      for(const h of j.hi){ await delay(28); print(`    <span class="c-d">▸</span> ${h}`); }
+      if(j.stack.length) print(`    ${j.stack.map(s=>`<span class="tchip">${s}</span>`).join('')}`);
+      blank();
+    }
+    showSuggs(['skills','projects','contact']);
+  },
+
+  async cert(){
+    blank();
+    print(`<span class="c-g c-bold">── CERTIFICATIONS ───────────────────────────</span>`);
+    blank();
+    print(`  <span class="c-y c-bold">Certified DBT Developer</span>`);
+    print(`  Issued by: <span class="c-c">Accredible</span>`);
+    print(`  <span style="text-decoration:underline;color:var(--cyan)">credentials.getdbt.com/2b27f5f6...</span>`);
+    blank();
+    showSuggs(['skills','experience','contact']);
+  },
+
+  async contact(){
+    blank();
+    print(`<span class="c-g c-bold">── CONTACT ──────────────────────────────────</span>`);
+    blank();
+    for(const [k,v] of [
+      ['Email',    'adithyakashyap@example.com'],
+      ['LinkedIn', 'linkedin.com/in/adithyakashyap'],
+      ['GitHub',   'github.com/kashyap-adithya'],
+      ['Instagram','instagram.com/im_avkashyap'],
+    ]){
+      await delay(60);
+      print(`  <span class="c-c">${k.padEnd(10)}</span><span style="text-decoration:underline">${v}</span>`);
+    }
+    blank();
+    print(`<span class="c-d">Currently open to new opportunities!</span>`);
+    blank();
+    showSuggs(['github','about','whoami']);
+  },
+
+  github(){
+    blank();
+    print(`<span class="c-g">Opening GitHub...</span>`);
+    print(`<span class="c-d">→ https://github.com/kashyap-adithya</span>`);
+    blank();
+    window.open('https://github.com/kashyap-adithya','_blank');
+  },
+
+  async resume(){
+    blank();
+    print(`<span class="c-g c-bold">── RESUME HIGHLIGHTS ────────────────────────</span>`);
+    blank();
+    const pts=['4+ years as a Data Engineer in tech companies','Processed 3TB+ data daily using Apache Spark','Reduced LLM preprocessing: 3 hours → 30 minutes','Smart SMS pipeline deployed across 80+ countries','Certified DBT Developer (Accredible)','Built fraud detection, spam & retention systems'];
+    for(const p of pts){ await delay(55); print(`  <span class="c-d">▸</span> ${p}`); }
+    blank();
+    showSuggs(['contact','experience','projects']);
+  },
+
+  clear(){
+    ftOut.innerHTML='';
+  },
+
+  /* easter eggs */
+  async ls(){
+    blank();
+    print(`<span class="c-c">drwxr-xr-x</span>  about/   experience/  projects/  skills/`);
+    print(`<span class="c-y">-rw-r--r--</span>  README.md   resume.pdf   pipeline.py`);
+    blank();
+  },
+  async pwd(){ blank(); print(`/home/ak/portfolio`); blank(); },
+  async date(){ blank(); print(new Date().toUTCString()); blank(); },
+  async uname(){ blank(); print(`ak-portfolio-os 5.4 #1 SMP — data-engineer build`); blank(); },
+  async uptime(){ blank(); print(`<span class="c-g">● online</span> — 4 years, 0 burnouts, countless pipelines shipped`); blank(); },
+  async echo(a){ blank(); print(esc(a||'')); blank(); },
+};
+
+const aliases={'dir':'ls','cls':'clear','man':'help','?':'help','who':'whoami'};
+const ALL_CMDS=Object.keys(cmds);
+
+async function runCmd(raw){
+  const t=raw.trim(); if(!t) return;
+  cmdHistory.unshift(t); hIdx=-1;
+  echoCmd(t);
+  let resolved=t.toLowerCase();
+  if(aliases[resolved]) resolved=aliases[resolved];
+  const [base,...rest]=resolved.split(/\s+/);
+  const args=rest.join(' ');
+  if(cmds[base]){ await cmds[base](args); }
+  else{
+    blank();
+    print(`<span class="c-r">bash: ${esc(base)}: command not found</span>`);
+    print(`<span class="c-d">Type <span class="c-c">help</span> to see all commands.</span>`);
+    blank();
+    showSuggs(['help','clear']);
+  }
+  document.getElementById('ft-hint').innerHTML=`last: <b>${esc(base)}</b>`;
+}
+
+ftInput.addEventListener('keydown',async e=>{
+  if(e.key==='Enter'){
+    const v=ftInput.value; ftInput.value=''; tabList=[];
+    await runCmd(v);
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    if(hIdx<cmdHistory.length-1){ hIdx++; ftInput.value=cmdHistory[hIdx]||''; }
+  } else if(e.key==='ArrowDown'){
+    e.preventDefault();
+    if(hIdx>0){ hIdx--; ftInput.value=cmdHistory[hIdx]; }
+    else{ hIdx=-1; ftInput.value=''; }
+  } else if(e.key==='Tab'){
+    e.preventDefault();
+    const p=ftInput.value.trim().toLowerCase();
+    if(!p) return;
+    if(!tabList.length){ tabList=ALL_CMDS.filter(c=>c.startsWith(p)); tabIdx=0; }
+    if(tabList.length){ ftInput.value=tabList[tabIdx%tabList.length]; tabIdx++; }
+  } else { tabList=[]; }
+});
+
+/* keyboard shortcut: ` to toggle terminal */
+document.addEventListener('keydown',e=>{
+  if(e.key==='`'&&!e.ctrlKey&&!e.metaKey&&document.activeElement!==ftInput){
+    toggleTerm();
+  }
+});
+</script>
 </body>
 </html>
